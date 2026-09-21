@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
-import { AccessAccount } from "@/components/generated/AccessAccount";
+import { SapphireAuthView as AccessAccount } from "@/components/auth/SapphireAuthView";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { DetailModal, NewQuoteModal, SettingsModal } from "@/components/dashboard/Modals";
