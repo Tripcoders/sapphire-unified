@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition, useCallback, useMemo } from "react";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { SapphireAuthView as AccessAccount } from "@/components/auth/SapphireAuthView";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -34,6 +34,13 @@ function Shell() {
   const [selected, setSelected] = useState<PolicyRecord | null>(null);
   const [showNewQuote, setShowNewQuote] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const handleNavigate = useCallback((id: string) => {
+    // Non-blocking navigation: UI (button active state, hover) paints immediately
+    // Heavy page mount (table, charts) is marked as transition so handler doesn't block for 223ms
+    startTransition(() => setActive(id));
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 1100);
@@ -50,7 +57,7 @@ function Shell() {
     );
   }
 
-  const title = active === "dashboard" ? "Insurance Policies" : (featureMeta.find((f) => f.id === active)?.label ?? "Insurance Policies");
+  const title = useMemo(() => active === "dashboard" ? "Insurance Policies" : (featureMeta.find((f) => f.id === active)?.label ?? "Insurance Policies"), [active]);
 
   const renderContent = () => {
     switch (active) {
@@ -88,7 +95,7 @@ function Shell() {
     <div className="min-h-screen bg-[#f8fafc] flex">
       <Sidebar
         active={active}
-        onChange={(id) => setActive(id)}
+        onChange={handleNavigate}
         collapsed={collapsed}
         onToggle={() => setCollapsed(!collapsed)}
         mobileOpen={mobileOpen}
